@@ -1,0 +1,12 @@
+crypto_analytics:
+  target: dev
+  outputs:
+    dev:
+      type: clickhouse
+      schema: crypto
+      host: clickhouse
+      port: 8123
+      user: admin
+      password: admin
+      secure: false
+      verify: false
