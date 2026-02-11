@@ -31,9 +31,9 @@ services:
   airflow-postgres:
     image: postgres:13
     environment:
-      POSTGRES_USER: airflow
-      POSTGRES_PASSWORD: airflow
-      POSTGRES_DB: airflow
+      POSTGRES_USER: ${AIRFLOW_PG_USER}
+      POSTGRES_PASSWORD: ${AIRFLOW_PG_PASS}
+      POSTGRES_DB: ${AIRFLOW_PG_DB}
     volumes:
       - airflow_postgres:/var/lib/postgresql/data
     healthcheck:
@@ -339,6 +339,8 @@ services:
     volumes:
       - ./notebooks:/home/jovyan/notebook
       - ./spark/jobs:/home/jovyan/spark_jobs
+    profiles:
+      - dev
     networks:
       - data-network
   dbt:
