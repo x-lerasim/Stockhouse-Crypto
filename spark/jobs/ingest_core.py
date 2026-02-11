@@ -25,6 +25,6 @@ dim_df=dim_df.filter(
                 col('market_cap').isNotNull() & 
                 (col('market_cap') > 0) 
                     )
-dim_df.write.mode('overwrite').partitionBy('load_date').parquet("s3a://core/dim_assets/")
+dim_df.write.mode('append').partitionBy('load_date').parquet("s3a://core/dim_assets/")
 
 spark.stop()
