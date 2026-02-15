@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import col ,to_date, from_unixtime, row_number
 from pyspark.sql.window import Window 
 import logging
+import argparse
 
 logging.basicConfig(
     level=logging.INFO,
@@ -22,6 +23,10 @@ def deduplication(df):
 
 def main():
     "Raw -> Core"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--execution-date")
+    args = parser.parse_args()
+    exec_date = args.execution_date
 
     spark = None
     try:
@@ -30,7 +35,7 @@ def main():
             .getOrCreate()
         
         raw_path ="s3a://raw/assets/"
-        df = spark.read.parquet(raw_path).cache()
+        df = spark.read.parquet(raw_path).filter(col("load_date")== exec_date).cache()
 
         initial_count = df.count()
         logger.info(f"Read {initial_count} records from raw")

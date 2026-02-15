@@ -1,6 +1,8 @@
 from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
 import logging
 import os
+import argparse
 
 logging.basicConfig(
     level=logging.INFO,
@@ -10,13 +12,17 @@ logger = logging.getLogger('Clickhouse')
 
 def main():
   spark = None
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--execution-date")
+  args = parser.parse_args()
+  exec_date = args.execution_date
   try:
     spark = SparkSession.builder \
        .appName("CoreloadClickhouse") \
        .getOrCreate()
 
     core_path = "s3a://core/dim_assets/"
-    df = spark.read.parquet(core_path)
+    df = spark.read.parquet(core_path).filter(col("load_date") == exec_date)
 
 
     ch_options = {

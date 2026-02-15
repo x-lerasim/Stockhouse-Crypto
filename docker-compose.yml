@@ -360,8 +360,8 @@ services:
       clickhouse:
         condition: service_healthy 
     volumes:
-      - ./dbt:/usr/app
-      - ./dbt/.dbt:/root/.dbt
+      - ./dbt/crypto_analytics:/usr/app/crypto_analytics
+      - ./dbt/.dbt:/home/dbt/.dbt
     working_dir: /usr/app/crypto_analytics
     profiles:
       - dev
