@@ -16,6 +16,13 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
+ARG DOCKER_CLI_VERSION=27.3.1
+RUN curl -fsSL -o /tmp/docker.tgz \
+        "https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_CLI_VERSION}.tgz" \
+    && tar xzf /tmp/docker.tgz -C /tmp \
+    && install -m 0755 /tmp/docker/docker /usr/local/bin/docker \
+    && rm -rf /tmp/docker /tmp/docker.tgz
+
 ENV JAVA_HOME=/usr/lib/jvm/default-java
 ENV SPARK_VERSION=3.5.1
 ENV HADOOP_VERSION=3
@@ -34,6 +41,8 @@ RUN mkdir -p /home/airflow/.ivy2 && chown -R airflow: /home/airflow/.ivy2
 USER airflow
 
 
-RUN pip install --no-cache-dir \
-    apache-airflow-providers-apache-spark \
-    apache-airflow-providers-amazon
+RUN pip install --no-cache-dir --no-deps apache-airflow-providers-apache-spark==4.8.1 \
+ && pip install --no-cache-dir \
+    apache-airflow-providers-amazon \
+    requests \
+    boto3

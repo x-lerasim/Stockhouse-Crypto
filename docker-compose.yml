@@ -8,6 +8,7 @@ x-airflow-common:
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+    AIRFLOW__CELERY__WORKER_CONCURRENCY: ${AIRFLOW__CELERY__WORKER_CONCURRENCY:-1}
     AIRFLOW_CONN_SPARK_DEFAULT: '{"conn_type": "spark", "host": "spark://spark-master", "port": 7077}'
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres/airflow
     AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@airflow-postgres/airflow
@@ -19,6 +20,10 @@ x-airflow-common:
     AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     AIRFLOW__CORE__TEST_CONNECTION: 'Enabled'
+    COINCAP_MAX_ASSETS: ${COINCAP_MAX_ASSETS:-150}
+    COINCAP_REQUEST_SLEEP_SEC: ${COINCAP_REQUEST_SLEEP_SEC:-0.05}
+    COINCAP_REQUEST_RETRIES: ${COINCAP_REQUEST_RETRIES:-3}
+    COINCAP_REQUEST_BACKOFF_SEC: ${COINCAP_REQUEST_BACKOFF_SEC:-1}
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
   volumes:
     - /var/run/docker.sock:/var/run/docker.sock
@@ -130,6 +135,7 @@ services:
     environment:
       <<: *airflow-common-env
       DUMB_INIT_SETSID: "0"
+      GUNICORN_CMD_ARGS: "--worker-tmp-dir /dev/shm --timeout 1200 --graceful-timeout 1200"
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
